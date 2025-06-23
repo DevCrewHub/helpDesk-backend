@@ -1,6 +1,6 @@
 # HelpDeskPro
 
-HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage customer and agent interactions efficiently. It supports user authentication, role-based access, and JWT-secured endpoints.
+HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage customer and agent interactions efficiently. It supports user authentication, role-based access, JWT-secured endpoints, and department management.
 
 ## Features
 - User registration (Customer/Agent roles)
@@ -8,6 +8,8 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - Role-based access control (Admin, Customer, Agent)
 - Secure password storage (BCrypt)
 - RESTful API endpoints
+- **Department management by admin**
+- **Agent signup with department selection by name**
 
 ## Technologies Used
 - Java 17+
@@ -43,7 +45,7 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 
 ### Signup (Register)
 - **Endpoint:** `POST /api/auth/signup`
-- **Request Body:**
+- **Request Body for Customer:**
   ```json
   {
     "email": "user@test.com",
@@ -51,7 +53,19 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
     "fullName": "Full Name",
     "phoneNumber": "1234567890",
     "password": "password",
-    "userRole": "CUSTOMER" // or "AGENT"
+    "userRole": "CUSTOMER"
+  }
+  ```
+- **Request Body for Agent (with departmentName):**
+  ```json
+  {
+    "email": "agent@test.com",
+    "userName": "agent1",
+    "fullName": "Agent One",
+    "phoneNumber": "1234567890",
+    "password": "agentpass",
+    "userRole": "AGENT",
+    "departmentName": "IT Support"
   }
   ```
 - **Response:** `201 Created` with user info or error message.
@@ -73,6 +87,48 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
     "userRole": "CUSTOMER"
   }
   ```
+
+### Department Management (Admin Only)
+
+#### Create Department
+- **Endpoint:** `POST /api/admin/departments`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+    "name": "IT Support"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "id": 1,
+    "name": "IT Support"
+  }
+  ```
+
+#### Get All Departments
+- **Endpoint:** `GET /api/admin/departments`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+
+#### Update Department
+- **Endpoint:** `PUT /api/admin/departments/{id}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Request Body:**
+  ```json
+  {
+    "name": "New Department Name"
+  }
+  ```
+
+#### Delete Department
+- **Endpoint:** `DELETE /api/admin/departments/{id}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
 
 ### Secured Endpoints
 - Use the JWT token in the `Authorization` header:

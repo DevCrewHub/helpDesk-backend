@@ -41,9 +41,9 @@ public class WebSecurityConfig {
 			.cors(cors -> {})
 			.authorizeHttpRequests(request -> request
 				.requestMatchers("/api/auth/**").permitAll()
-				.requestMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.name())
-				.requestMatchers("/api/employee/**").hasAuthority(UserRole.CUSTOMER.name())
-				.requestMatchers("/api/agent/**").hasAuthority(UserRole.AGENT.name())
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/api/employee/**").hasRole("CUSTOMER")
+				.requestMatchers("/api/agent/**").hasRole("AGENT")
 				.anyRequest().authenticated()
 			)
 			.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

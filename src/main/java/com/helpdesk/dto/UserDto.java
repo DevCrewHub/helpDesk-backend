@@ -20,5 +20,9 @@ public class UserDto {
 	private String phoneNumber;
 	
 	private UserRole userRole;
+	
+	private Long departmentId;
+	
+	private String departmentName;
 
 }

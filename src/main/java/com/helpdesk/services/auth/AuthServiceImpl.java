@@ -10,8 +10,10 @@ import com.helpdesk.dto.UserDto;
 //import com.helpdesk.dao.SignupRequest;
 //import com.helpdesk.dao.UserDto;
 import com.helpdesk.entities.User;
+import com.helpdesk.entities.Department;
 import com.helpdesk.enums.UserRole;
 import com.helpdesk.repositories.UserRepository;
+import com.helpdesk.repositories.DepartmentRepository;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
 
     @PostConstruct
     public void createAnAdminAccount() {
@@ -49,6 +52,17 @@ public class AuthServiceImpl implements AuthService {
         user.setPhoneNumber(signupRequest.getPhoneNumber());
         user.setPassword(new BCryptPasswordEncoder().encode(signupRequest.getPassword())); 
         user.setUserRole(UserRole.valueOf(signupRequest.getUserRole().toUpperCase())); 
+        
+        // Set department for agents using department name
+        if (UserRole.AGENT.equals(user.getUserRole()) && signupRequest.getDepartmentName() != null) {
+            Optional<Department> department = departmentRepository.findByName(signupRequest.getDepartmentName());
+            if (department.isPresent()) {
+                user.setDepartment(department.get());
+            } else {
+                throw new RuntimeException("Department not found with name: " + signupRequest.getDepartmentName());
+            }
+        }
+        
         User createdUser = userRepository.save(user);
         return createdUser.getUserDto();
     }
