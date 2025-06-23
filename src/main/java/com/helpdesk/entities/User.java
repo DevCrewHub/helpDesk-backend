@@ -18,6 +18,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import lombok.Data;
 
 @Data
@@ -48,6 +50,10 @@ public class User implements UserDetails {
 	
 	@Column(name = "user_role", nullable = false)
 	private UserRole userRole;
+	
+	@ManyToOne
+	@JoinColumn(name = "department_id")
+	private Department department;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,6 +88,10 @@ public class User implements UserDetails {
 		userDto.setFullName(fullName);
 		userDto.setPhoneNumber(phoneNumber);
 		userDto.setUserRole(userRole);
+		if (department != null) {
+			userDto.setDepartmentId(department.getId());
+			userDto.setDepartmentName(department.getName());
+		}
 		return userDto;
 	}
 	
