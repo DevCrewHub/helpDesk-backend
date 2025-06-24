@@ -13,13 +13,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/admin")
 public class AdminController {
-	
+
 	private final AdminService adminService;
-	
+
 	@GetMapping("/users")
-    public ResponseEntity<?> getUsers() {
+	public ResponseEntity<?> getUsers() {
 //        log.info("Admin requested user list.");
-        return ResponseEntity.ok(adminService.getUsers());
+		return ResponseEntity.ok(adminService.getUsers());
+	}
+	
+	@GetMapping("/tickets")
+    public ResponseEntity<?> getAllTickets() {
+//        log.info("Admin fetching all tasks.");
+        return ResponseEntity.ok(adminService.getAllTickets());
     }
 
 }

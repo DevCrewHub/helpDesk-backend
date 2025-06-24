@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-	
+
 	private final UserRepository userRepository;
 
 	public String generateToken(UserDetails userDetails) {
@@ -33,13 +33,10 @@ public class JwtUtil {
 	}
 
 	private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-		return Jwts.builder()
-			.setClaims(extraClaims)
-			.setSubject(userDetails.getUsername())
-			.setIssuedAt(new Date(System.currentTimeMillis()))
-			.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
-			.signWith(getSigningKey(), SignatureAlgorithm.HS256)
-			.compact();
+		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 hours
+				.signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
 	}
 
 	private Key getSigningKey() {
@@ -70,22 +67,18 @@ public class JwtUtil {
 	}
 
 	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder()
-			.setSigningKey(getSigningKey())
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
 	}
 
-//	public User getLoggedInUser() {
-//	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//	    if (authentication != null && authentication.isAuthenticated()) {
-//	        User user = (User) authentication.getPrincipal();
-//	        Optional<User> optionalUser = userRepository.findById(user.getId());
-//	        return optionalUser.orElse(null);
-//	    }
-//
-//	    return null;
-//	}
+	public User getLoggedInUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication != null && authentication.isAuthenticated()) {
+			String username = authentication.getName();
+			Optional<User> optionalUser = userRepository.findByUsername(username);
+			return optionalUser.orElse(null);
+		}
+
+		return null;
+	}
 }

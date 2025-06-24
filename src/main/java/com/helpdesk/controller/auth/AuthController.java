@@ -29,62 +29,61 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-	
+
 	private final AuthService authService;
 	private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-	
+	private final JwtUtil jwtUtil;
+	private final UserService userService;
+	private final AuthenticationManager authenticationManager;
+
 	@PostMapping("/signup")
-    public ResponseEntity<?> signupUser(@RequestBody SignupRequest signupRequest) {
+	public ResponseEntity<?> signupUser(@RequestBody SignupRequest signupRequest) {
 //        log.info("Received signup request for username: {}", signupRequest.getUserName());
-        if (authService.hasUserWithUsername(signupRequest.getUserName())) {
+		if (authService.hasUserWithUsername(signupRequest.getUserName())) {
 //            log.warn("Signup failed: Username already exists - {}", signupRequest.getUserName());
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User already exists with this username");
-        }
-        if (authService.hasUserWithEmail(signupRequest.getEmail())) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User already exists with this username");
+		}
+		if (authService.hasUserWithEmail(signupRequest.getEmail())) {
 //            log.warn("Signup failed: Email already exists - {}", signupRequest.getEmail());
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User already exists with this email");
-        }
-        UserDto createdUserDto = authService.signupUser(signupRequest);
-        if (createdUserDto == null) {
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("User already exists with this email");
+		}
+		UserDto createdUserDto = authService.signupUser(signupRequest);
+		if (createdUserDto == null) {
 //            log.error("Signup failed for email: {}", signupRequest.getEmail());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not created");
-        }
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not created");
+		}
 //        log.info("User created successfully: {}", createdUserDto.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
-    }
-	
+		return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDto);
+	}
+
 	@PostMapping("/login")
-    public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
+	public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) {
 //        log.info("Login attempt for email: {}", authenticationRequest.getEmail());
 
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    authenticationRequest.getUsername(),
-                    authenticationRequest.getPassword()));
-        } catch (BadCredentialsException e) {
+		try {
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+		} catch (BadCredentialsException e) {
 //            log.error("Login failed for email: {}", authenticationRequest.getEmail());
-            throw new BadCredentialsException("Incorrect username or password");
-        }
+			throw new BadCredentialsException("Incorrect username or password");
+		}
 
-        final UserDetails userDetails = userService.userDetailService().loadUserByUsername(authenticationRequest.getUsername());
-        Optional<User> optionalUser = userRepository.findByUsername(authenticationRequest.getUsername());
+		final UserDetails userDetails = userService.userDetailService()
+				.loadUserByUsername(authenticationRequest.getUsername());
+		Optional<User> optionalUser = userRepository.findByUsername(authenticationRequest.getUsername());
 
-        final String jwtToken = jwtUtil.generateToken(userDetails);
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            authenticationResponse.setJwt(jwtToken);
-            authenticationResponse.setUserId(user.getId());
-            authenticationResponse.setUserRole(user.getUserRole());
+		final String jwtToken = jwtUtil.generateToken(userDetails);
+		AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+		if (optionalUser.isPresent()) {
+			User user = optionalUser.get();
+			authenticationResponse.setJwt(jwtToken);
+			authenticationResponse.setUserId(user.getId());
+			authenticationResponse.setUserRole(user.getUserRole());
 //            log.info("Login successful for user ID: {}, role: {}", user.getId(), user.getUserRole());
-        } else {
+		} else {
 //            log.warn("User not found after successful authentication: {}", authenticationRequest.getEmail());
-        }
-        return authenticationResponse;
-    }
+		}
+		return authenticationResponse;
+	}
 
 }

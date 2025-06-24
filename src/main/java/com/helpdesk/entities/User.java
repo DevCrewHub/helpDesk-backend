@@ -25,32 +25,32 @@ import lombok.Data;
 @Data
 @Entity
 public class User implements UserDetails {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(unique = true, nullable = false)
 	private String username;
-	
+
 	@NotBlank(message = "Email is required")
 	@Email(message = "Invalid email format")
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
-	
+
 	@Column(nullable = false)
 	private String password;
-	
+
 	@Column(name = "full_name", nullable = false)
 	private String fullName;
-	
+
 	@Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
 	@Column(name = "phone_number", length = 20)
 	private String phoneNumber;
-	
+
 	@Column(name = "user_role", nullable = false)
 	private UserRole userRole;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "department_id")
 	private Department department;
@@ -59,25 +59,25 @@ public class User implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + this.userRole.name()));
 	}
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
-	    return true; 
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-	    return true; 
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-	    return true; 
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-	    return true; 
+		return true;
 	}
 
 	public UserDto getUserDto() {
@@ -94,5 +94,5 @@ public class User implements UserDetails {
 		}
 		return userDto;
 	}
-	
+
 }

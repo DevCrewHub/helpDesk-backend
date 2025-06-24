@@ -17,15 +17,12 @@ import lombok.RequiredArgsConstructor;
 public class DepartmentServiceImpl implements DepartmentService {
 
 	private final DepartmentRepository departmentRepository;
-	
+
 	@Override
 	public List<DepartmentDto> getAllDepartments() {
-		return departmentRepository.findAll()
-			.stream()
-			.map(this::convertToDto)
-			.collect(Collectors.toList());
+		return departmentRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public DepartmentDto createDepartment(DepartmentDto departmentDto) {
 		Department department = new Department();
@@ -33,7 +30,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 		Department savedDepartment = departmentRepository.save(department);
 		return convertToDto(savedDepartment);
 	}
-	
+
 	@Override
 	public DepartmentDto updateDepartment(Long id, DepartmentDto departmentDto) {
 		Optional<Department> optionalDepartment = departmentRepository.findById(id);
@@ -45,22 +42,22 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void deleteDepartment(Long id) {
 		departmentRepository.deleteById(id);
 	}
-	
+
 	@Override
 	public DepartmentDto getDepartmentById(Long id) {
 		Optional<Department> optionalDepartment = departmentRepository.findById(id);
 		return optionalDepartment.map(this::convertToDto).orElse(null);
 	}
-	
+
 	private DepartmentDto convertToDto(Department department) {
 		DepartmentDto dto = new DepartmentDto();
 		dto.setId(department.getId());
 		dto.setName(department.getName());
 		return dto;
 	}
-} 
+}
