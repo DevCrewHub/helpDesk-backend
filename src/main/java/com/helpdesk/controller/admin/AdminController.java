@@ -2,9 +2,13 @@ package com.helpdesk.controller.admin;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.helpdesk.dto.TicketDto;
 import com.helpdesk.services.admin.AdminService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,21 @@ public class AdminController {
     public ResponseEntity<?> getAllTickets() {
 //        log.info("Admin fetching all tasks.");
         return ResponseEntity.ok(adminService.getAllTickets());
+    }
+	
+	@GetMapping("/tickets/pending")
+    public ResponseEntity<?> getPendingTickets() {
+        return ResponseEntity.ok(adminService.getPendingTickets());
+    }
+
+    @PutMapping("/tickets/{ticketId}/assign")
+    public ResponseEntity<?> assignTicket(@PathVariable Long ticketId, @RequestParam Long agentId) {
+        try {
+            TicketDto updatedTicket = adminService.assignTicket(ticketId, agentId);
+            return ResponseEntity.ok(updatedTicket);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

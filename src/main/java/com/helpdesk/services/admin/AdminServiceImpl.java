@@ -2,6 +2,7 @@ package com.helpdesk.services.admin;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,9 +11,11 @@ import com.helpdesk.dto.TicketDto;
 import com.helpdesk.dto.UserDto;
 import com.helpdesk.entities.Ticket;
 import com.helpdesk.entities.User;
+import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.enums.UserRole;
 import com.helpdesk.repositories.TicketRepository;
 import com.helpdesk.repositories.UserRepository;
+import com.helpdesk.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminServiceImpl implements AdminService {
 
 	private final UserRepository userRepository;
-
+	private final JwtUtil jwtUtil;
 	private final TicketRepository ticketRepository;
 
 	@Override
@@ -40,5 +43,32 @@ public class AdminServiceImpl implements AdminService {
 				.map(Ticket::getTicketDto)
 				.collect(Collectors.toList());
 	}
+	
+	@Override
+    public List<TicketDto> getPendingTickets() {
+        return ticketRepository.findByTicketStatus(TicketStatus.PENDING)
+                .stream().map(Ticket::getTicketDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public TicketDto assignTicket(Long ticketId, Long agentId) {
+        User admin = jwtUtil.getLoggedInUser();
+        Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
+        Optional<User> optionalAgent = userRepository.findById(agentId);
+
+        if (optionalTicket.isPresent() && optionalAgent.isPresent() && optionalAgent.get().getUserRole() == UserRole.AGENT) {
+            Ticket ticket = optionalTicket.get();
+            User agent = optionalAgent.get();
+
+            if (ticket.getDepartment().equals(agent.getDepartment())) {
+                ticket.setAssignedAgent(agent);
+                ticket.setTicketStatus(TicketStatus.ASSIGNED);
+                return ticketRepository.save(ticket).getTicketDto();
+            } else {
+                throw new RuntimeException("Agent's department does not match the ticket's department.");
+            }
+        }
+        throw new RuntimeException("Ticket or Agent not found or invalid role.");
+    }
 
 }
