@@ -31,9 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final UserService userService;
 
 	@Override
-	protected void doFilterInternal(@NonNull HttpServletRequest request, 
-	                                @NonNull HttpServletResponse response, 
-	                                @NonNull FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain) throws ServletException, IOException {
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
 		final String userEmail;
@@ -48,8 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			UserDetails userDetails = userService.userDetailService().loadUserByUsername(userEmail);
 			if (jwtUtil.isTokenValid(jwt, userDetails)) {
 				SecurityContext context = SecurityContextHolder.createEmptyContext();
-				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+						null, userDetails.getAuthorities());
 				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				context.setAuthentication(authToken);
 				SecurityContextHolder.setContext(context);
@@ -57,10 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 		filterChain.doFilter(request, response);
 	}
-	
+
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-	    String path = request.getServletPath();
-	    return path.startsWith("/api/auth/");
+		String path = request.getServletPath();
+		return path.startsWith("/api/auth/");
 	}
 }

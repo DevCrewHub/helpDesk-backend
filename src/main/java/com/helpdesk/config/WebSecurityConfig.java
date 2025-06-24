@@ -33,22 +33,16 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class WebSecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final UserService userService;
-	
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-			.csrf(AbstractHttpConfigurer::disable)
-			.cors(cors -> {})
-			.authorizeHttpRequests(request -> request
-				.requestMatchers("/api/auth/**").permitAll()
-				.requestMatchers("/api/admin/**").hasRole("ADMIN")
-				.requestMatchers("/api/employee/**").hasRole("CUSTOMER")
-				.requestMatchers("/api/agent/**").hasRole("AGENT")
-				.anyRequest().authenticated()
-			)
-			.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-			.authenticationProvider(authenticationProvider())
-			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		http.csrf(AbstractHttpConfigurer::disable).cors(cors -> {
+		}).authorizeHttpRequests(request -> request.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/api/admin/**").hasRole("ADMIN").requestMatchers("/api/employee/**")
+				.hasRole("CUSTOMER").requestMatchers("/api/agent/**").hasRole("AGENT").anyRequest().authenticated())
+				.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+				.authenticationProvider(authenticationProvider())
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}

@@ -13,14 +13,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/departments")
 public class DepartmentController {
-	
+
 	private final DepartmentService departmentService;
-	
+
 	@GetMapping
 	public ResponseEntity<?> getAllDepartments() {
 		return ResponseEntity.ok(departmentService.getAllDepartments());
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getDepartmentById(@PathVariable Long id) {
 		DepartmentDto department = departmentService.getDepartmentById(id);
@@ -29,13 +29,13 @@ public class DepartmentController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<?> createDepartment(@RequestBody DepartmentDto departmentDto) {
 		DepartmentDto createdDepartment = departmentService.createDepartment(departmentDto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartment);
 	}
-	
+
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateDepartment(@PathVariable Long id, @RequestBody DepartmentDto departmentDto) {
 		DepartmentDto updatedDepartment = departmentService.updateDepartment(id, departmentDto);
@@ -44,10 +44,10 @@ public class DepartmentController {
 		}
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
 		departmentService.deleteDepartment(id);
 		return ResponseEntity.ok().build();
 	}
-} 
+}

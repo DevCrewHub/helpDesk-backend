@@ -10,10 +10,11 @@ import com.helpdesk.enums.UserRole;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	
+
 	Optional<User> findByUsername(String username);
+
 	Optional<User> findFirstByEmail(String email);
-	
+
 	Optional<User> findByUserRole(UserRole userRole);
 
 }
