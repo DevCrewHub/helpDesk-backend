@@ -1,6 +1,6 @@
 # HelpDeskPro
 
-HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage customer and agent interactions efficiently. It supports user authentication, role-based access, JWT-secured endpoints, and department management.
+HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage customer and agent interactions efficiently. It supports user authentication, role-based access, JWT-secured endpoints, department management, and a full ticket assignment workflow.
 
 ## Features
 - User registration (Customer/Agent roles)
@@ -8,8 +8,11 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - Role-based access control (Admin, Customer, Agent)
 - Secure password storage (BCrypt)
 - RESTful API endpoints
-- **Department management by admin**
-- **Agent signup with department selection by name**
+- Department management by admin
+- Agent signup with department selection by name
+- Ticket creation by customer (pending status)
+- Admin can view and assign pending tickets to agents
+- Agent can view tickets assigned to them
 
 ## Technologies Used
 - Java 17+
@@ -17,7 +20,7 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - Spring Security (JWT)
 - Hibernate/JPA
 - Lombok
-- H2/MySQL (configurable)
+- MySQL
 
 ## Getting Started
 
@@ -32,7 +35,12 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
    cd HelpDeskPro
    ```
 2. **Configure the database:**
-   - Edit `src/main/resources/application.properties` for your DB settings (H2/MySQL).
+   The application uses MySQL as its database. Configure the following properties in `src/main/resources/application.properties` for your DB settings (MySQL):
+    ```properties
+    spring.datasource.url=jdbc:mysql://localhost:3306/helpdesk_db
+    spring.datasource.username=root
+    spring.datasource.password=your_password
+    ```
 3. **Build and run the application:**
    ```sh
    ./mvnw spring-boot:run
@@ -79,14 +87,6 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
     "password": "password"
   }
   ```
-- **Response:**
-  ```json
-  {
-    "jwt": "<token>",
-    "userId": 1,
-    "userRole": "CUSTOMER"
-  }
-  ```
 
 ### Department Management (Admin Only)
 
@@ -98,13 +98,6 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - **Request Body:**
   ```json
   {
-    "name": "IT Support"
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "id": 1,
     "name": "IT Support"
   }
   ```
@@ -130,6 +123,50 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - **Headers:**
   - `Authorization: Bearer <admin-jwt-token>`
 
+### Ticket Workflow
+
+#### 1. Customer Creates a Ticket
+- **Endpoint:** `POST /api/customer/tickets`
+- **Headers:**
+  - `Authorization: Bearer <customer-jwt-token>`
+  - `Content-Type: application/json`
+- **Request Body:**
+  ```json
+  {
+    "title": "Printer not working",
+    "description": "The office printer is jammed.",
+    "priority": "MEDIUM",
+    "dueDate": "2024-12-31T10:00:00.000Z",
+    "departmentName": "IT Support"
+  }
+  ```
+- **Response:** Ticket with status `PENDING` and no assigned agent.
+
+#### 2. Admin Views All Tickets
+- **Endpoint:** `GET /api/admin/tickets`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Response:** List of all tickets in the system (regardless of status).
+
+#### 3. Admin Views Pending Tickets
+- **Endpoint:** `GET /api/admin/tickets/pending`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Response:** List of all tickets with status `PENDING`.
+
+#### 4. Admin Assigns Ticket to Agent
+- **Endpoint:** `PUT /api/admin/tickets/{ticketId}/assign?agentId={agentId}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Response:** Updated ticket with status `ASSIGNED` and assigned agent info.
+- **Note:** The agent must belong to the same department as the ticket.
+
+#### 5. Agent Views Assigned Tickets
+- **Endpoint:** `GET /api/agent/tickets`
+- **Headers:**
+  - `Authorization: Bearer <agent-jwt-token>`
+- **Response:** List of tickets assigned to the logged-in agent.
+
 ### Secured Endpoints
 - Use the JWT token in the `Authorization` header:
   ```
@@ -145,7 +182,7 @@ HelpDeskPro/
 │   ├── controller/       # REST controllers
 │   ├── dto/              # Data transfer objects
 │   ├── entities/         # JPA entities
-│   ├── enums/            # Enum types (UserRole)
+│   ├── enums/            # Enum types (UserRole, TicketStatus, etc.)
 │   ├── repositories/     # Spring Data JPA repositories
 │   ├── services/         # Service layer
 │   └── utils/            # Utility classes (JWT)

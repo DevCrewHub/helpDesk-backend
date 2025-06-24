@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.helpdesk.entities.Ticket;
 import com.helpdesk.entities.User;
+import com.helpdesk.enums.TicketStatus;
 
 import java.util.List;
 
@@ -12,5 +13,9 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByCustomer(User customer);
+    
+    List<Ticket> findByTicketStatus(TicketStatus ticketStatus);
+
+    List<Ticket> findByAssignedAgent(User assignedAgent);
 
 }

@@ -10,5 +10,9 @@ public interface AdminService {
 	List<UserDto> getUsers();
 	
 	List<TicketDto> getAllTickets();
+	
+	List<TicketDto> getPendingTickets();
+
+	TicketDto assignTicket(Long ticketId, Long agentId);
 
 }
