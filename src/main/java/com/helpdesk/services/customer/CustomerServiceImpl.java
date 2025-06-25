@@ -151,5 +151,13 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return List.of();
     }
+    
+    @Override
+	public TicketDto getTicketById(Long id) {
+    	User customer = jwtUtil.getLoggedInUser();
+		return Optional.ofNullable(ticketRepository.findTicketByCustomerAndId(customer, id))
+		    .map(Ticket::getTicketDto)
+		    .orElse(null);
+	}
 
 }

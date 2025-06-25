@@ -16,5 +16,7 @@ public interface AdminService {
 	TicketDto assignTicket(Long ticketId, Long agentId);
 	
 	List<TicketDto> searchTicketByTitle(String title);
+	
+	TicketDto getTicketById(Long id);
 
 }

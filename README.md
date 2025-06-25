@@ -231,6 +231,36 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
     GET /api/admin/tickets/search/printer
     ```
 
+#### 11. Get Ticket by ID
+- **Customer:**
+  - **Endpoint:** `GET /api/customer/ticket/{id}`
+  - **Headers:**
+    - `Authorization: Bearer <customer-jwt-token>`
+  - **Description:** Returns the ticket with the given ID if it was created by the logged-in customer. Returns 404 if not found or not accessible.
+  - **Response Example:**
+    ```json
+    {
+      "id": 1,
+      "title": "Printer not working",
+      "description": "The office printer is jammed.",
+      "priority": "MEDIUM",
+      "dueDate": "2024-12-31T10:00:00.000Z",
+      "ticketStatus": "PENDING",
+      "assignedAgent": { ... },
+      "department": { ... }
+    }
+    ```
+- **Agent:**
+  - **Endpoint:** `GET /api/agent/ticket/{id}`
+  - **Headers:**
+    - `Authorization: Bearer <agent-jwt-token>`
+  - **Description:** Returns the ticket with the given ID if it is assigned to the logged-in agent. Returns 404 if not found or not accessible.
+- **Admin:**
+  - **Endpoint:** `GET /api/admin/ticket/{id}`
+  - **Headers:**
+    - `Authorization: Bearer <admin-jwt-token>`
+  - **Description:** Returns the ticket with the given ID if it exists in the system. Returns 404 if not found.
+
 ### Complete Ticket Status Flow
 ```
 PENDING → ASSIGNED → INPROGRESS → RESOLVED → CLOSED

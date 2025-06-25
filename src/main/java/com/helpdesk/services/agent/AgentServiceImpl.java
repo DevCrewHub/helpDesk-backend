@@ -91,4 +91,12 @@ public class AgentServiceImpl implements AgentService {
         return List.of();
     }
     
+    @Override
+	public TicketDto getTicketById(Long id) {
+    	User agent = jwtUtil.getLoggedInUser();
+		return Optional.ofNullable(ticketRepository.findTicketByAssignedAgentAndId(agent, id))
+		    .map(Ticket::getTicketDto)
+		    .orElse(null);
+	}
+    
 }
