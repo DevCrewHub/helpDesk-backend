@@ -3,6 +3,7 @@ package com.helpdesk.services.customer;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 //import java.util.Optional;
 
@@ -64,6 +65,50 @@ public class CustomerServiceImpl implements CustomerService {
                 .sorted(Comparator.comparing(Ticket::getDueDate).reversed())
                 .map(Ticket::getTicketDto)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+	public void deleteTicket(Long id) {
+    	ticketRepository.deleteById(id);
+	}
+
+    @Override
+    public TicketDto updateTicketStatus(Long ticketId, TicketStatus newStatus) {
+        User customer = jwtUtil.getLoggedInUser();
+        if (customer == null) {
+            throw new RuntimeException("Customer not authenticated");
+        }
+        
+        Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
+        if (optionalTicket.isEmpty()) {
+            throw new RuntimeException("Ticket not found");
+        }
+        
+        Ticket ticket = optionalTicket.get();
+        
+        // Check if the logged-in customer is the creator of this ticket
+        if (!customer.equals(ticket.getCustomer())) {
+            throw new RuntimeException("You can only update tickets created by you");
+        }
+        
+        // Validate status transition based on new status
+        if (newStatus == TicketStatus.CLOSED) {
+            // Customer can close ticket anytime (except if already closed)
+            if (ticket.getTicketStatus() == TicketStatus.CLOSED) {
+                throw new RuntimeException("Ticket is already closed");
+            }
+        } else if (newStatus == TicketStatus.ASSIGNED) {
+            // Customer can only reassign when ticket is RESOLVED
+            if (ticket.getTicketStatus() != TicketStatus.RESOLVED) {
+                throw new RuntimeException("You can only reassign ticket when it is RESOLVED");
+            }
+        } else {
+            throw new RuntimeException("You can only change status to CLOSED or ASSIGNED");
+        }
+        
+        // Update the status
+        ticket.setTicketStatus(newStatus);
+        return ticketRepository.save(ticket).getTicketDto();
     }
 
 }

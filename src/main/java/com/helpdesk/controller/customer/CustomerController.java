@@ -2,13 +2,18 @@ package com.helpdesk.controller.customer;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.helpdesk.dto.TicketDto;
+import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.services.customer.CustomerService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +26,7 @@ public class CustomerController {
 	private final CustomerService customerService;
 
 	@PostMapping("/ticket")
-	public ResponseEntity<TicketDto> createTask(@RequestBody TicketDto ticketDto) {
+	public ResponseEntity<TicketDto> createTicket(@RequestBody TicketDto ticketDto) {
 //        log.info("Admin creating new task: {}", taskDao.getTitle());
 		TicketDto createTicketDto = customerService.createTicket(ticketDto);
 
@@ -40,6 +45,26 @@ public class CustomerController {
     public ResponseEntity<?> getAllTicketsCreated() {
 //        log.info("Admin fetching all tasks.");
 		return ResponseEntity.ok(customerService.getAllTicketsCreated());
+    }
+	
+	@DeleteMapping("/ticket/{id}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
+//        log.info("Admin deleting task with ID: {}", id);
+		customerService.deleteTicket(id);
+        return ResponseEntity.ok(null);
+    }
+    
+    @PutMapping("/tickets/{ticketId}/status")
+    public ResponseEntity<?> updateTicketStatus(@PathVariable Long ticketId, @RequestParam String status) {
+        try {
+            TicketStatus newStatus = TicketStatus.valueOf(status.toUpperCase());
+            TicketDto updatedTicket = customerService.updateTicketStatus(ticketId, newStatus);
+            return ResponseEntity.ok(updatedTicket);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status: " + status);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
