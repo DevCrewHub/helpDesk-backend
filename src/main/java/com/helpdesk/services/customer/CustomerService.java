@@ -3,6 +3,7 @@ package com.helpdesk.services.customer;
 import java.util.List;
 
 import com.helpdesk.dto.TicketDto;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 
 public interface CustomerService {
@@ -14,5 +15,7 @@ public interface CustomerService {
 	void deleteTicket(Long id);
 
 	TicketDto updateTicketStatus(Long ticketId, TicketStatus newStatus);
+	
+	TicketDto updateTicketPriority(Long ticketId, Priority newPriority);
 
 }
