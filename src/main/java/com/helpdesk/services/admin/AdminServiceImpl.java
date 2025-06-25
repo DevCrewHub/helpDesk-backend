@@ -79,5 +79,11 @@ public class AdminServiceImpl implements AdminService {
 				.map(Ticket::getTicketDto)
 				.collect(Collectors.toList());
 	}
+    
+    @Override
+	public TicketDto getTicketById(Long id) {
+		Optional<Ticket> optionalTicket = ticketRepository.findById(id);
+		return optionalTicket.map(Ticket::getTicketDto).orElse(null);
+	}
 
 }

@@ -11,4 +11,6 @@ public interface AgentService {
     
     List<TicketDto> searchTicketByTitle(String title);
     
+    TicketDto getTicketById(Long id);
+    
 }

@@ -18,6 +18,8 @@ public interface CustomerService {
 	
 	TicketDto updateTicketPriority(Long ticketId, Priority newPriority);
 	
-	  List<TicketDto> searchTicketByTitle(String title);
+	List<TicketDto> searchTicketByTitle(String title);
+	
+	TicketDto getTicketById(Long id);
 
 }

@@ -2,6 +2,7 @@ package com.helpdesk.controller.agent;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +46,18 @@ public class AgentController {
     public ResponseEntity<List<TicketDto>> searchTask(@PathVariable String title) {
 //        log.info("Admin searching tasks with title containing: {}", title);
         return ResponseEntity.ok(agentService.searchTicketByTitle(title));
+    }
+    
+    @GetMapping("/ticket/{id}")
+    public ResponseEntity<TicketDto> getTicketById(@PathVariable Long id) {
+//        log.info("Fetching task details for ID {}", id);
+    	TicketDto ticket = agentService.getTicketById(id);
+        if (ticket == null) {
+//            log.warn("Task not found for ID {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+//        log.info("Task found: ID {}", task.getId());
+        return ResponseEntity.ok(ticket);
     }
     
 }

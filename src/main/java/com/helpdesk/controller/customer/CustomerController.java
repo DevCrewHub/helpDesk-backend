@@ -85,5 +85,17 @@ public class CustomerController {
     public ResponseEntity<?> searchTicketsByTitle(@PathVariable String title) {
         return ResponseEntity.ok(customerService.searchTicketByTitle(title));
     }
+    
+    @GetMapping("/ticket/{id}")
+    public ResponseEntity<TicketDto> getTicketById(@PathVariable Long id) {
+//        log.info("Fetching task details for ID {}", id);
+    	TicketDto ticket = customerService.getTicketById(id);
+        if (ticket == null) {
+//            log.warn("Task not found for ID {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+//        log.info("Task found: ID {}", task.getId());
+        return ResponseEntity.ok(ticket);
+    }
 
 }
