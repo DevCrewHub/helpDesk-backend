@@ -15,6 +15,7 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - Agent can view tickets assigned to them
 - Agent can update ticket status (ASSIGNED → INPROGRESS → RESOLVED)
 - Customer can update ticket status (any status → CLOSED, RESOLVED → ASSIGNED)
+- Customer can update the priority of their open tickets
 
 ## Technologies Used
 - Java 17+
@@ -193,6 +194,13 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - **Headers:**
   - `Authorization: Bearer <customer-jwt-token>`
 - **Response:** List of tickets created by the logged-in customer.
+
+#### 9. Customer Updates Ticket Priority
+- **Endpoint:** `PUT /api/customer/tickets/{ticketId}/priority?priority={newPriority}`
+- **Headers:**
+  - `Authorization: Bearer <customer-jwt-token>`
+- **Valid Priority Values:** `LOW`, `MEDIUM`, `HIGH`
+- **Note:** The ticket status must not be `RESOLVED` or `CLOSED`.
 
 ### Complete Ticket Status Flow
 ```

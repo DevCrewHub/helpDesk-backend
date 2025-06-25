@@ -13,6 +13,7 @@ import com.helpdesk.dto.TicketDto;
 import com.helpdesk.entities.Ticket;
 import com.helpdesk.entities.User;
 import com.helpdesk.entities.Department;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.repositories.TicketRepository;
 import com.helpdesk.repositories.DepartmentRepository;
@@ -108,6 +109,34 @@ public class CustomerServiceImpl implements CustomerService {
         
         // Update the status
         ticket.setTicketStatus(newStatus);
+        return ticketRepository.save(ticket).getTicketDto();
+    }
+    
+    @Override
+    public TicketDto updateTicketPriority(Long ticketId, Priority newPriority) {
+        User customer = jwtUtil.getLoggedInUser();
+        if (customer == null) {
+            throw new RuntimeException("Customer not authenticated");
+        }
+        
+        Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
+        if (optionalTicket.isEmpty()) {
+            throw new RuntimeException("Ticket not found");
+        }
+        
+        Ticket ticket = optionalTicket.get();
+        
+        // Check if the logged-in customer is the creator of this ticket
+        if (!customer.equals(ticket.getCustomer())) {
+            throw new RuntimeException("You can only update tickets created by you");
+        }
+
+        // Prevent priority change if ticket is resolved or closed
+        if (ticket.getTicketStatus() == TicketStatus.RESOLVED || ticket.getTicketStatus() == TicketStatus.CLOSED) {
+            throw new RuntimeException("Cannot change priority of a resolved or closed ticket.");
+        }
+        
+        ticket.setPriority(newPriority);
         return ticketRepository.save(ticket).getTicketDto();
     }
 

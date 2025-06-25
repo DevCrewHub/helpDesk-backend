@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.helpdesk.dto.TicketDto;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.services.customer.CustomerService;
 
@@ -62,6 +63,19 @@ public class CustomerController {
             return ResponseEntity.ok(updatedTicket);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid status: " + status);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @PutMapping("/tickets/{ticketId}/priority")
+    public ResponseEntity<?> updateTicketPriority(@PathVariable Long ticketId, @RequestParam String priority) {
+        try {
+            Priority newPriority = Priority.valueOf(priority.toUpperCase());
+            TicketDto updatedTicket = customerService.updateTicketPriority(ticketId, newPriority);
+            return ResponseEntity.ok(updatedTicket);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid priority: " + priority);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
