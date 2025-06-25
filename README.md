@@ -13,6 +13,8 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - Ticket creation by customer (pending status)
 - Admin can view and assign pending tickets to agents
 - Agent can view tickets assigned to them
+- Agent can update ticket status (ASSIGNED → INPROGRESS → RESOLVED)
+- Customer can update ticket status (any status → CLOSED, RESOLVED → ASSIGNED)
 
 ## Technologies Used
 - Java 17+
@@ -166,6 +168,40 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - **Headers:**
   - `Authorization: Bearer <agent-jwt-token>`
 - **Response:** List of tickets assigned to the logged-in agent.
+
+#### 6. Agent Updates Ticket Status
+- **Endpoint:** `PUT /api/agent/tickets/{ticketId}/status?status={newStatus}`
+- **Headers:**
+  - `Authorization: Bearer <agent-jwt-token>`
+- **Valid Status Values:** `INPROGRESS`, `RESOLVED`
+- **Status Transitions:**
+  - `ASSIGNED` → `INPROGRESS`
+  - `INPROGRESS` → `RESOLVED`
+  - `ASSIGNED` → `RESOLVED` (direct)
+
+#### 7. Customer Updates Ticket Status
+- **Endpoint:** `PUT /api/customer/tickets/{ticketId}/status?status={newStatus}`
+- **Headers:**
+  - `Authorization: Bearer <customer-jwt-token>`
+- **Valid Status Values:** `CLOSED`, `ASSIGNED`
+- **Status Transitions:**
+  - Any status → `CLOSED` (customer can close anytime)
+  - `RESOLVED` → `ASSIGNED` (only when ticket is resolved)
+
+#### 8. Customer Views Created Tickets
+- **Endpoint:** `GET /api/customer/ticketsCreated`
+- **Headers:**
+  - `Authorization: Bearer <customer-jwt-token>`
+- **Response:** List of tickets created by the logged-in customer.
+
+### Complete Ticket Status Flow
+```
+PENDING → ASSIGNED → INPROGRESS → RESOLVED → CLOSED
+   ↓         ↓           ↓           ↓         ↓
+Customer   Admin      Agent      Agent     Customer
+Creates   Assigns    Starts     Completes  Closes
+Ticket    to Agent   Working    Work       Ticket
+```
 
 ### Secured Endpoints
 - Use the JWT token in the `Authorization` header:
