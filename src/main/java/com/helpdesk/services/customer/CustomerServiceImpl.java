@@ -139,5 +139,17 @@ public class CustomerServiceImpl implements CustomerService {
         ticket.setPriority(newPriority);
         return ticketRepository.save(ticket).getTicketDto();
     }
+    
+    @Override
+    public List<TicketDto> searchTicketByTitle(String title) {
+        User customer = jwtUtil.getLoggedInUser();
+        if (customer != null) {
+            return ticketRepository.findByCustomerAndTitleContaining(customer, title)
+                .stream()
+                .map(Ticket::getTicketDto)
+                .collect(Collectors.toList());
+        }
+        return List.of();
+    }
 
 }

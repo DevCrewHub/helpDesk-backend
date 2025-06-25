@@ -70,5 +70,14 @@ public class AdminServiceImpl implements AdminService {
         }
         throw new RuntimeException("Ticket or Agent not found or invalid role.");
     }
+    
+    @Override
+	public List<TicketDto> searchTicketByTitle(String title) {
+		return ticketRepository.findAllByTitleContaining(title)
+				.stream()
+				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+				.map(Ticket::getTicketDto)
+				.collect(Collectors.toList());
+	}
 
 }

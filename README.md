@@ -202,6 +202,35 @@ HelpDeskPro is a Spring Boot-based help desk ticketing system designed to manage
 - **Valid Priority Values:** `LOW`, `MEDIUM`, `HIGH`
 - **Note:** The ticket status must not be `RESOLVED` or `CLOSED`.
 
+#### 10. Ticket Search by Title
+- **Agent:**
+  - **Endpoint:** `GET /api/agent/tickets/search/{title}`
+  - **Headers:**
+    - `Authorization: Bearer <agent-jwt-token>`
+  - **Description:** Returns only the tickets assigned to the logged-in agent that contain the given title (case-insensitive, partial match).
+  - **Example:**
+    ```
+    GET /api/agent/tickets/search/printer
+    ```
+- **Customer:**
+  - **Endpoint:** `GET /api/customer/tickets/search/{title}`
+  - **Headers:**
+    - `Authorization: Bearer <customer-jwt-token>`
+  - **Description:** Returns only the tickets created by the logged-in customer that contain the given title (case-insensitive, partial match).
+  - **Example:**
+    ```
+    GET /api/customer/tickets/search/printer
+    ```
+- **Admin:**
+  - **Endpoint:** `GET /api/admin/tickets/search/{title}`
+  - **Headers:**
+    - `Authorization: Bearer <admin-jwt-token>`
+  - **Description:** Returns all tickets in the system that contain the given title (case-insensitive, partial match).
+  - **Example:**
+    ```
+    GET /api/admin/tickets/search/printer
+    ```
+
 ### Complete Ticket Status Flow
 ```
 PENDING → ASSIGNED → INPROGRESS → RESOLVED → CLOSED

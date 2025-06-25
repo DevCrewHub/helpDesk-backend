@@ -8,4 +8,7 @@ public interface AgentService {
     List<TicketDto> getAssignedTickets();
     
     TicketDto updateTicketStatus(Long ticketId, TicketStatus newStatus);
+    
+    List<TicketDto> searchTicketByTitle(String title);
+    
 }
