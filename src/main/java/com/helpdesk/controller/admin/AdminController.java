@@ -1,5 +1,7 @@
 package com.helpdesk.controller.admin;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,6 +47,12 @@ public class AdminController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    
+    @GetMapping("/tickets/search/{title}")
+    public ResponseEntity<List<TicketDto>> searchTask(@PathVariable String title) {
+//        log.info("Admin searching tasks with title containing: {}", title);
+        return ResponseEntity.ok(adminService.searchTicketByTitle(title));
     }
 
 }

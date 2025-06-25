@@ -17,5 +17,7 @@ public interface CustomerService {
 	TicketDto updateTicketStatus(Long ticketId, TicketStatus newStatus);
 	
 	TicketDto updateTicketPriority(Long ticketId, Priority newPriority);
+	
+	  List<TicketDto> searchTicketByTitle(String title);
 
 }

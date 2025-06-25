@@ -78,4 +78,17 @@ public class AgentServiceImpl implements AgentService {
         }
         return false;
     }
+    
+    @Override
+    public List<TicketDto> searchTicketByTitle(String title) {
+        User agent = jwtUtil.getLoggedInUser();
+        if (agent != null) {
+            return ticketRepository.findByAssignedAgentAndTitleContaining(agent, title)
+                    .stream()
+                    .map(Ticket::getTicketDto)
+                    .collect(Collectors.toList());
+        }
+        return List.of();
+    }
+    
 }

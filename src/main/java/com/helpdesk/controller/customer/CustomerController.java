@@ -80,5 +80,10 @@ public class CustomerController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    
+    @GetMapping("/tickets/search/{title}")
+    public ResponseEntity<?> searchTicketsByTitle(@PathVariable String title) {
+        return ResponseEntity.ok(customerService.searchTicketByTitle(title));
+    }
 
 }

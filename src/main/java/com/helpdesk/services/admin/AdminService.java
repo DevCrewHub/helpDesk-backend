@@ -14,5 +14,7 @@ public interface AdminService {
 	List<TicketDto> getPendingTickets();
 
 	TicketDto assignTicket(Long ticketId, Long agentId);
+	
+	List<TicketDto> searchTicketByTitle(String title);
 
 }
