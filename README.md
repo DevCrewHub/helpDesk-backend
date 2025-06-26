@@ -305,6 +305,26 @@ Admins can filter tickets using the following endpoints:
   - `{name}`: Name of the department (e.g., `IT Support`)
 - **Response:** List of tickets belonging to the specified department.
 
+### Agent Ticket Filtering Features
+
+Agents can filter their assigned tickets using the following endpoints:
+
+#### Filter Assigned Tickets by Priority
+- **Endpoint:** `GET /api/agent/tickets/priority/{priority}`
+- **Headers:**
+  - `Authorization: Bearer <agent-jwt-token>`
+- **Path Variable:**
+  - `{priority}`: `LOW`, `MEDIUM`, or `HIGH`
+- **Response:** List of tickets assigned to the agent with the specified priority.
+
+#### Filter Assigned Tickets by Status
+- **Endpoint:** `GET /api/agent/tickets/status/{status}`
+- **Headers:**
+  - `Authorization: Bearer <agent-jwt-token>`
+- **Path Variable:**
+  - `{status}`: `PENDING`, `ASSIGNED`, `INPROGRESS`, `RESOLVED`, or `CLOSED`
+- **Response:** List of tickets assigned to the agent with the specified status.
+
 ## Project Structure
 ```
 HelpDeskPro/

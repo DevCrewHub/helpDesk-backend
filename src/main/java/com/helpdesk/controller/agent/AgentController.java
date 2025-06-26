@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.helpdesk.dto.TicketDto;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.services.agent.AgentService;
 
@@ -58,6 +59,28 @@ public class AgentController {
         }
 //        log.info("Task found: ID {}", task.getId());
         return ResponseEntity.ok(ticket);
+    }
+    
+    @GetMapping("/tickets/priority/{priority}")
+    public ResponseEntity<List<TicketDto>> getTicketsByPriority(@PathVariable String priority) {
+        try {
+            Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
+            List<TicketDto> tickets = agentService.getTicketsByPriority(priorityEnum);
+            return ResponseEntity.ok(tickets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @GetMapping("/tickets/status/{status}")
+    public ResponseEntity<List<TicketDto>> getTicketsByTicketStatus(@PathVariable String status) {
+        try {
+            TicketStatus ticketStatusEnum = TicketStatus.valueOf(status.toUpperCase());
+            List<TicketDto> tickets = agentService.getTicketsByTicketStatus(ticketStatusEnum);
+            return ResponseEntity.ok(tickets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
 }

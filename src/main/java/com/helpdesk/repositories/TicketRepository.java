@@ -33,5 +33,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByPriority(Priority priority);
     
     List<Ticket> findByDepartmentName(String name);
+    
+    List<Ticket> findByAssignedAgentAndPriority(User assignedAgentr, Priority priority);
+    
+    List<Ticket> findByAssignedAgentAndTicketStatus(User assignedAgentr, TicketStatus ticketStatus);
 
 }
