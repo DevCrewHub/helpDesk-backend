@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.helpdesk.dto.TicketDto;
 import com.helpdesk.dto.UserDto;
+import com.helpdesk.entities.Department;
 import com.helpdesk.entities.Ticket;
 import com.helpdesk.entities.User;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.enums.UserRole;
 import com.helpdesk.repositories.TicketRepository;
@@ -44,11 +46,11 @@ public class AdminServiceImpl implements AdminService {
 				.collect(Collectors.toList());
 	}
 	
-	@Override
-    public List<TicketDto> getPendingTickets() {
-        return ticketRepository.findByTicketStatus(TicketStatus.PENDING)
-                .stream().map(Ticket::getTicketDto).collect(Collectors.toList());
-    }
+//	@Override
+//    public List<TicketDto> getPendingTickets() {
+//        return ticketRepository.findByTicketStatus(TicketStatus.PENDING)
+//                .stream().map(Ticket::getTicketDto).collect(Collectors.toList());
+//    }
 
     @Override
     public TicketDto assignTicket(Long ticketId, Long agentId) {
@@ -84,6 +86,33 @@ public class AdminServiceImpl implements AdminService {
 	public TicketDto getTicketById(Long id) {
 		Optional<Ticket> optionalTicket = ticketRepository.findById(id);
 		return optionalTicket.map(Ticket::getTicketDto).orElse(null);
+	}
+    
+    @Override
+	public List<TicketDto> getTicketsByPriority(Priority priority) {
+		return ticketRepository.findByPriority(priority)
+				.stream()
+				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+				.map(Ticket::getTicketDto)
+				.collect(Collectors.toList());
+	}
+    
+    @Override
+	public List<TicketDto> getTicketsByTicketStatus(TicketStatus ticketStatus) {
+		return ticketRepository.findByTicketStatus(ticketStatus)
+				.stream()
+				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+				.map(Ticket::getTicketDto)
+				.collect(Collectors.toList());
+	}
+    
+    @Override
+	public List<TicketDto> getTicketsByDepartmentName(String name) {
+		return ticketRepository.findByDepartmentName(name)
+				.stream()
+				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+				.map(Ticket::getTicketDto)
+				.collect(Collectors.toList());
 	}
 
 }

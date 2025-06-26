@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.helpdesk.dto.TicketDto;
+import com.helpdesk.enums.Priority;
+import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.services.admin.AdminService;
 
 import lombok.RequiredArgsConstructor;
@@ -35,10 +37,10 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAllTickets());
     }
 	
-	@GetMapping("/tickets/pending")
-    public ResponseEntity<?> getPendingTickets() {
-        return ResponseEntity.ok(adminService.getPendingTickets());
-    }
+//	@GetMapping("/tickets/pending")
+//    public ResponseEntity<?> getPendingTickets() {
+//        return ResponseEntity.ok(adminService.getPendingTickets());
+//    }
 
     @PutMapping("/tickets/{ticketId}/assign")
     public ResponseEntity<?> assignTicket(@PathVariable Long ticketId, @RequestParam Long agentId) {
@@ -66,6 +68,33 @@ public class AdminController {
         }
 //        log.info("Task found: ID {}", task.getId());
         return ResponseEntity.ok(ticket);
+    }
+    
+    @GetMapping("/tickets/priority/{priority}")
+    public ResponseEntity<List<TicketDto>> getTicketsByPriority(@PathVariable String priority) {
+        try {
+            Priority priorityEnum = Priority.valueOf(priority.toUpperCase());
+            List<TicketDto> tickets = adminService.getTicketsByPriority(priorityEnum);
+            return ResponseEntity.ok(tickets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @GetMapping("/tickets/status/{status}")
+    public ResponseEntity<List<TicketDto>> getTicketsByTicketStatus(@PathVariable String status) {
+        try {
+        	TicketStatus statusEnum = TicketStatus.valueOf(status.toUpperCase());
+            List<TicketDto> tickets = adminService.getTicketsByTicketStatus(statusEnum);
+            return ResponseEntity.ok(tickets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    @GetMapping("/tickets/department/{name}")
+    public ResponseEntity<List<TicketDto>> getTicketsByDepartmentName(@PathVariable String name) {
+    	return ResponseEntity.ok(adminService.getTicketsByDepartmentName(name));
     }
 
 }
