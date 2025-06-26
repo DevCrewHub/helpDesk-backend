@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.helpdesk.dto.TicketDto;
 import com.helpdesk.entities.Ticket;
 import com.helpdesk.entities.User;
+import com.helpdesk.enums.Priority;
 import com.helpdesk.enums.TicketStatus;
 import com.helpdesk.repositories.TicketRepository;
 import com.helpdesk.utils.JwtUtil;
@@ -98,5 +99,31 @@ public class AgentServiceImpl implements AgentService {
 		    .map(Ticket::getTicketDto)
 		    .orElse(null);
 	}
+    
+    @Override
+	public List<TicketDto> getTicketsByPriority(Priority priority) {
+    	User agent = jwtUtil.getLoggedInUser();
+        if (agent != null) {
+        	return ticketRepository.findByAssignedAgentAndPriority(agent, priority)
+    				.stream()
+    				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+    				.map(Ticket::getTicketDto)
+    				.collect(Collectors.toList());
+        }
+        return List.of();
+	}
+    
+    @Override
+   	public List<TicketDto> getTicketsByTicketStatus(TicketStatus ticketStatus) {
+       	User agent = jwtUtil.getLoggedInUser();
+           if (agent != null) {
+           	return ticketRepository.findByAssignedAgentAndTicketStatus(agent, ticketStatus)
+       				.stream()
+       				.sorted(Comparator.comparing(Ticket::getDueDate).reversed())
+       				.map(Ticket::getTicketDto)
+       				.collect(Collectors.toList());
+           }
+           return List.of();
+   	}
     
 }
