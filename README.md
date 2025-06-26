@@ -277,6 +277,34 @@ Ticket    to Agent   Working    Work       Ticket
   ```
 - Access role-based endpoints as per your user role.
 
+### Admin Ticket Filtering Features
+
+Admins can filter tickets using the following endpoints:
+
+#### Filter Tickets by Priority
+- **Endpoint:** `GET /api/admin/tickets/priority/{priority}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Path Variable:**
+  - `{priority}`: `LOW`, `MEDIUM`, or `HIGH`
+- **Response:** List of tickets with the specified priority.
+
+#### Filter Tickets by Status
+- **Endpoint:** `GET /api/admin/tickets/status/{status}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Path Variable:**
+  - `{status}`: `PENDING`, `ASSIGNED`, `INPROGRESS`, `RESOLVED`, or `CLOSED`
+- **Response:** List of tickets with the specified status.
+
+#### Filter Tickets by Department Name
+- **Endpoint:** `GET /api/admin/tickets/department/{name}`
+- **Headers:**
+  - `Authorization: Bearer <admin-jwt-token>`
+- **Path Variable:**
+  - `{name}`: Name of the department (e.g., `IT Support`)
+- **Response:** List of tickets belonging to the specified department.
+
 ## Project Structure
 ```
 HelpDeskPro/
